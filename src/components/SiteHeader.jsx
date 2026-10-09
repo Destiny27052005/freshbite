@@ -1,11 +1,11 @@
 import { useState, useRef, useEffect } from "react";
-import { 
-  Leaf, 
-  Menu, 
-  Search, 
-  ShoppingCart, 
-  X, 
-  CheckCircle2, 
+import {
+  Leaf,
+  Menu,
+  Search,
+  ShoppingCart,
+  X,
+  CheckCircle2,
   AlertCircle,
   Plus
 } from "lucide-react";
@@ -33,10 +33,10 @@ export default function SiteHeader() {
   // Filter products by title or category
   const searchResults = searchQuery.trim()
     ? productsData.filter(
-        (p) =>
-          p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          p.category.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+      (p) =>
+        p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.category.toLowerCase().includes(searchQuery.toLowerCase())
+    )
     : [];
 
   // Close search dropdown on outside click
@@ -75,10 +75,9 @@ export default function SiteHeader() {
               to={link.to}
               end={link.to === "/"}
               className={({ isActive }) =>
-                `relative py-1 text-sm font-semibold transition-colors ${
-                  isActive
-                    ? "text-[#12773c] after:content-[''] after:absolute after:left-0 after:-bottom-4 after:w-full after:h-[2.5px] after:bg-[#12773c] after:rounded-full"
-                    : "text-gray-600 hover:text-gray-900"
+                `relative py-1 text-sm font-semibold transition-colors ${isActive
+                  ? "text-[#12773c] after:content-[''] after:absolute after:left-0 after:-bottom-4 after:w-full after:h-[2.5px] after:bg-[#12773c] after:rounded-full"
+                  : "text-gray-600 hover:text-gray-900"
                 }`
               }
             >
@@ -90,7 +89,7 @@ export default function SiteHeader() {
         {/* Search & Actions */}
         <div className="flex items-center gap-4">
           {/* Search Input Container */}
-          <div ref={searchContainerRef} className="relative">
+          <div ref={searchContainerRef} className="relative hidden sm:block">
             <div className="flex items-center gap-2 bg-[#f8faf9] border border-gray-200/90 px-3.5 py-1.5 rounded-full w-52 sm:w-64 lg:w-72 focus-within:border-[#12773c] focus-within:bg-white transition-all shadow-2xs">
               <Search className="h-4 w-4 text-gray-400 shrink-0" />
               <input
@@ -230,14 +229,123 @@ export default function SiteHeader() {
                 to={link.to}
                 onClick={() => setMobileMenuOpen(false)}
                 className={({ isActive }) =>
-                  `px-3 py-2 rounded-lg text-sm font-medium ${
-                    isActive ? "bg-green-50 text-[#12773c]" : "text-gray-700 hover:bg-gray-50"
+                  `px-3 py-2 rounded-lg text-sm font-medium ${isActive ? "bg-green-50 text-[#12773c]" : "text-gray-700 hover:bg-gray-50"
                   }`
                 }
               >
                 {link.title}
               </NavLink>
             ))}
+
+            {/* Search Input Container */}
+            <div ref={searchContainerRef} className="relative">
+              <div className="flex items-center gap-2 bg-[#f8faf9] border border-gray-200/90 px-3.5 py-1.5 rounded-full w-52 sm:w-64 lg:w-72 focus-within:border-[#12773c] focus-within:bg-white transition-all shadow-2xs">
+                <Search className="h-4 w-4 text-gray-400 shrink-0" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  placeholder="Search products..."
+                  onFocus={() => setIsSearchOpen(true)}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setIsSearchOpen(true);
+                  }}
+                  className="w-full bg-transparent text-xs text-gray-800 placeholder-gray-400 outline-none"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="text-gray-400 hover:text-gray-600 cursor-pointer"
+                  >
+                    <X size={13} />
+                  </button>
+                )}
+              </div>
+
+              {/* Live Search Availability Dropdown */}
+              {isSearchOpen && searchQuery.trim().length > 0 && (
+                <div className="absolute right-0 top-full mt-2 w-72 sm:w-84 bg-white border border-gray-100 rounded-2xl shadow-xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                  <div className="px-3 py-2 bg-gray-50/70 border-b border-gray-100 flex items-center justify-between text-[11px] text-gray-500 font-medium">
+                    <span>Results for "{searchQuery}"</span>
+                    <span>{searchResults.length} found</span>
+                  </div>
+
+                  <div className="max-h-72 overflow-y-auto divide-y divide-gray-100">
+                    {searchResults.length === 0 ? (
+                      <div className="p-4 text-center space-y-1">
+                        <div className="flex justify-center text-amber-500">
+                          <AlertCircle size={20} />
+                        </div>
+                        <p className="text-xs font-semibold text-gray-800">Product Unavailable</p>
+                        <p className="text-[11px] text-gray-400">
+                          We don't have this item in stock right now. Check back soon!
+                        </p>
+                      </div>
+                    ) : (
+                      searchResults.map((prod) => (
+                        <div
+                          key={prod.id}
+                          className="p-2.5 flex items-center justify-between gap-2.5 hover:bg-gray-50/80 transition-colors"
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <img
+                              src={prod.img}
+                              alt={prod.title}
+                              className="w-10 h-10 rounded-lg object-cover shrink-0 border border-gray-100"
+                            />
+                            <div className="min-w-0">
+                              <h4 className="text-xs font-semibold text-gray-800 truncate">
+                                {prod.title}
+                              </h4>
+                              <div className="flex items-center gap-2 mt-0.5">
+                                <span className="text-[11px] font-bold text-gray-900">
+                                  ₦{prod.price.toLocaleString()}
+                                </span>
+
+                                {/* Availability Pill */}
+                                {prod.inStock ? (
+                                  <span className="inline-flex items-center gap-0.5 text-[9px] font-bold px-1.5 py-0.2 rounded-md bg-[#eaf5ed] text-[#12773c]">
+                                    <CheckCircle2 size={10} /> Available
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center gap-0.5 text-[9px] font-bold px-1.5 py-0.2 rounded-md bg-red-50 text-red-600">
+                                    <AlertCircle size={10} /> Out of stock
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Direct Add to Cart (Only if in stock) */}
+                          {prod.inStock && (
+                            <button
+                              onClick={() => {
+                                addItem(prod);
+                                setIsSearchOpen(false);
+                              }}
+                              title="Add to Cart"
+                              className="shrink-0 p-1.5 rounded-lg bg-[#12773c] hover:bg-[#0e5c2e] text-white transition-colors cursor-pointer"
+                            >
+                              <Plus size={14} />
+                            </button>
+                          )}
+                        </div>
+                      ))
+                    )}
+                  </div>
+
+                  <div className="p-2 bg-gray-50 border-t border-gray-100 text-center">
+                    <Link
+                      to="/shop"
+                      onClick={() => setIsSearchOpen(false)}
+                      className="text-[11px] text-[#12773c] font-semibold hover:underline"
+                    >
+                      View All Products in Shop &rarr;
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
           </nav>
         </div>
       )}
