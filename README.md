@@ -132,5 +132,3 @@ Use your actual business number in production. The number should include the cou
 ## License
 
 This project is intended to be licensed under the [MIT License](https://opensource.org/license/mit/).
-
-If you distribute the project under the MIT License, include a `LICENSE` file in the repository containing the complete license text.
